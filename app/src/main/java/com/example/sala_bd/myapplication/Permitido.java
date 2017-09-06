@@ -16,6 +16,7 @@ import android.database.Cursor;
         Cursor mContactsCursor;
         ListView list;
 
+
 @Override
 protected void onCreate(Bundle savedInstanceState)
         {
