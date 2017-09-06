@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 ImageButton botonContacto;
                 ImageButton botonCamara;
                 ImageButton botonLocalizacion;
-
+                int RESULT_OK =1;
 
                 ListView list;
                 String[] mProjection;
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 private static final int contactos = 1;
                 private static final int camara = 2;
                 private static final int localizacion = 3;
-                ImageView image;
+
 
                 @Override
                 protected void onCreate(Bundle savedInstanceState) {
@@ -158,9 +158,8 @@ public void onRequestPermissionsResult(int requestCode,String permissions[],int[
 
         public void llamarActividadCamara()
         {
-        Intent pickImage=new Intent(Intent.ACTION_PICK);
-        pickImage.setType("image/*");
-        startActivityForResult(pickImage,camara);
+            Intent sendIntent3=new Intent(getBaseContext(),Imagen.class);
+            startActivity(sendIntent3);
         }
 
         public void llamarActividadLocalizacion()
@@ -173,21 +172,6 @@ public void onRequestPermissionsResult(int requestCode,String permissions[],int[
 
 
 
-        protected void onActivityResult(int requestCode,int resultCode,Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
-        switch(requestCode){
-        case camara:
-        if(resultCode==RESULT_OK){
-        try{
-            final Uri imageUri = data.getData();
-            final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-            image.setImageBitmap(selectedImage);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        }
-        }
-        }
+
 
         }
