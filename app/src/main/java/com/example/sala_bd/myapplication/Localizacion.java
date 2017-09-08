@@ -12,6 +12,10 @@ import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,9 +41,17 @@ public class Localizacion extends AppCompatActivity {
     TextView latitud;
     TextView longitud;
     TextView altitud;
+    TextView distancia;
+    Button guardar;
     private static final int localizacion = 3;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
+    public	final	static	double	RADIUS_OF_EARTH_KM	 =	6371;
+    double plazaLatitud = 4.5983;
+    double plazalongitud = -74.0753;
+    double distanciaT=0;
+    ListView lista;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,33 +61,15 @@ public class Localizacion extends AppCompatActivity {
         latitud = (TextView) findViewById(R.id.latitud);
         longitud = (TextView) findViewById(R.id.longitud);
         altitud = (TextView) findViewById(R.id.altitud);
+        distancia = (TextView) findViewById(R.id.distancia);
+        distancia = (Button) findViewById(R.id.guardar);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationRequest = createLocationRequest();
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-          /*  mFusedLocationClient.getLastLocation().addOnSuccessListener(this,	 new
-                    OnSuccessListener<Location>()	 {
-            @Override
-                public	void	onSuccess(Location	 location) {
-                    Log.i("LOCATION", "onSuccess location");
-                    if (location != null) {
-                        Log.i("	LOCATION	",
-                                "Longitud:	 " + location.getLongitude());
-                       String la= Double.toString(location.getLatitude());
-                        latitud.setText(la);
-                        String lo= Double.toString(location.getLongitude());
-                        longitud.setText(lo);
-                        String al= Double.toString(location.getAltitude());
-                        altitud.setText(al);
-                        Log.i("	LOCATION	",
-                                "Latitud:	 " + location.getLatitude());
-                    }
-                }
-            });*/
+
                       check();
-
-
         }
 
         mLocationCallback =	new	LocationCallback()	 {
@@ -90,7 +84,30 @@ public class Localizacion extends AppCompatActivity {
                 }
             }
         };
+
+
+        guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                distanciaT=distance(Double.valueOf(latitud.getText().toString()),Double.valueOf(longitud.getText().toString()),plazaLatitud,plazalongitud);
+
+
+                ArrayAdapter<String> adaptador;
+
+                lista = (ListView)findViewById(R.id.listView);
+
+                adaptador = new ArrayAdapter<String>(Localizacion.this,android.R.layout.simple_list_item_1);
+
+                lista.setAdapter(adaptador);
+            }
+        });
     }
+
+
+
+
+
     protected	LocationRequest createLocationRequest()	 {
         LocationRequest mLocationRequest =	new	LocationRequest();
         mLocationRequest.setInterval(10000);	 //tasa de	refresco en	milisegundos
@@ -170,5 +187,15 @@ public class Localizacion extends AppCompatActivity {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,	 mLocationCallback,
                     null);
         }
+    }
+    public	double	distance(double	 lat1,	double	long1,	double	lat2,	double	long2)	{
+        double	latDistance =	Math.toRadians(lat1	 - lat2);
+        double	lngDistance =	Math.toRadians(long1	 - long2);
+        double	a	=	Math.sin(latDistance /	2)	*	Math.sin(latDistance /	2)
+                +	Math.cos(Math.toRadians(lat1))	 *	Math.cos(Math.toRadians(lat2))
+                *	Math.sin(lngDistance /	2)	*	Math.sin(lngDistance /	2);
+        double	c	=	2	*	Math.atan2(Math.sqrt(a),	 Math.sqrt(1	- a));
+        double	result	=	RADIUS_OF_EARTH_KM	 *	c;
+        return	Math.round(result*100.0)/100.0;
     }
 }
