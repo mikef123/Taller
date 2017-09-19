@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,11 +36,26 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 public class Localizacion extends AppCompatActivity {
 
     private LocationRequest mLocationRequest;
     TextView latitud;
     TextView longitud;
+    String la;
+    String lo;
     TextView altitud;
     TextView distancia;
     Button guardar;
@@ -51,55 +67,63 @@ public class Localizacion extends AppCompatActivity {
     double plazalongitud = -74.0753;
     double distanciaT=0;
     ListView lista;
+    List<String> ubicacion = new ArrayList<String>();
+   String texto;
+    JSONArray localizaciones = new JSONArray();
 
+    public String[] mApps = {
+            "Instagram",
+            "Pinterest",
+            "Pocket",
+            "Twitter"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_localizacion);
-        pedirPermisoLocalizacion();
         latitud = (TextView) findViewById(R.id.latitud);
         longitud = (TextView) findViewById(R.id.longitud);
         altitud = (TextView) findViewById(R.id.altitud);
         distancia = (TextView) findViewById(R.id.distancia);
-        distancia = (Button) findViewById(R.id.guardar);
+        guardar = (Button) findViewById(R.id.guardar);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationRequest = createLocationRequest();
 
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        check();
 
-                      check();
-        }
-
-        mLocationCallback =	new	LocationCallback()	 {
+        mLocationCallback = new LocationCallback() {
             @Override
-            public	void	onLocationResult(LocationResult locationResult)	 {
-                Location	location	=	locationResult.getLastLocation();
-                Log.i("LOCATION",	"Location	update	in	the	callback:	"	+	location);
-                if	(location	 !=	null)	{
-                    latitud.setText("Latitude:	 	"	+	String.valueOf(location.getLatitude()));
-                    longitud.setText("Longitude:	 	"	+	String.valueOf(location.getLongitude()));
-                    altitud.setText("Altitude:			"	+	String.valueOf(location.getAltitude()));
+            public void onLocationResult(LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                Log.i("LOCATION", "Location	update	in	the	callback:	" + location);
+                if (location != null) {
+                    la=String.valueOf(location.getLatitude());
+                    lo=String.valueOf(location.getAltitude());
+                    latitud.setText("Latitude:	 	" + la);
+                    longitud.setText("Longitude:	 	" + String.valueOf(location.getLongitude()));
+                    altitud.setText("Altitude:			" + lo);
+                    distanciaT = distance(location.getLatitude(), location.getLongitude(), plazaLatitud, plazalongitud);
+                    distancia.setText(distancia.getText() + ": " + distanciaT);
                 }
             }
         };
+
+
 
 
         guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                distanciaT=distance(Double.valueOf(latitud.getText().toString()),Double.valueOf(longitud.getText().toString()),plazaLatitud,plazalongitud);
-
-
+                texto= "Latitud: " + la + " Longitud: " + lo + "Fecha: " + Calendar.getInstance().getTime().toString();
+                ubicacion.add(texto);
                 ArrayAdapter<String> adaptador;
-
-                lista = (ListView)findViewById(R.id.listView);
-
-                adaptador = new ArrayAdapter<String>(Localizacion.this,android.R.layout.simple_list_item_1);
-
+                lista = (ListView) findViewById(R.id.listView);
+                adaptador = new ArrayAdapter<String>(Localizacion.this, android.R.layout.simple_list_item_1, ubicacion);
                 lista.setAdapter(adaptador);
+                writeJSONObject();
             }
         });
     }
@@ -198,4 +222,32 @@ public class Localizacion extends AppCompatActivity {
         double	result	=	RADIUS_OF_EARTH_KM	 *	c;
         return	Math.round(result*100.0)/100.0;
     }
+    public JSONObject toJSON ()	{
+        JSONObject obj =	new	JSONObject();
+        try	{
+            obj.put("latitud",	latitud.getText().toString());
+            obj.put("longitud",	longitud.getText().toString());
+            obj.put("date",	Calendar.getInstance().getTime().toString());
+        }	catch	(JSONException e)	{
+            e.printStackTrace();
+        }
+        return	obj;
+    }
+    private	void	writeJSONObject(){
+        localizaciones.put(toJSON());
+        Writer output	=	null;
+        String	filename=	"locations.json";
+        try	{
+            File file	=	new	File(getBaseContext().getExternalFilesDir(null),	 filename);
+            Log.i("LOCATION",	"Ubicacion de	archivo:	"+file);
+            output	=	new BufferedWriter(new FileWriter(file));
+            output.write(localizaciones.toString());
+            output.close();
+            Toast.makeText(getApplicationContext(),	 "Location	saved",
+                    Toast.LENGTH_LONG).show();
+        }	catch	(Exception	e)	 {
+            Toast.makeText(getBaseContext(),	 e.getMessage(),	 Toast.LENGTH_LONG).show();
+        }
+    }
 }
+

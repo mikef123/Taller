@@ -43,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 private static final int contactos = 1;
                 private static final int camara = 2;
                 private static final int localizacion = 3;
-
+                private static final int IMAGE_PICKER_REQUEST = 2;
+                static final int REQUEST_IMAGE_CAPTURE = 1;
 
                 @Override
                 protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +87,15 @@ public class MainActivity extends AppCompatActivity {
 
                     botonLocalizacion.setOnClickListener(new View.OnClickListener() {
                                            public void onClick(View v) {
+                           if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                                               llamarActividadLocalizacion();
+
+                               pedirPermisoLocalizacion();
+
+                           } else {
+
+                               llamarActividadLocalizacion();
+                           }
                                            }
                                        }
                     );
@@ -110,18 +118,51 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-                public void pedirPermisoCamara() {
-                    int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+    public void pedirPermisoCamara() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
-                        }
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                camara);
-                    }
-                }
+            }
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    camara);
+        }
+    }
+
+    public void pedirPermisoLocalizacion()
+    {
+        int permissionCheck= ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION))
+            {
+
+            }
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    localizacion);
+        }
+
+    }
 
 
+    public void llamarActividad()
+    {
+        Intent sendIntent=new Intent(getBaseContext(),Permitido.class);
+        startActivity(sendIntent);
+    }
+
+    public void llamarActividadCamara()
+    {
+        Intent sendIntent3=new Intent(getBaseContext(),Imagen.class);
+        startActivity(sendIntent3);
+    }
+
+    public void llamarActividadLocalizacion()
+    {
+
+        Intent sendIntent3=new Intent(getBaseContext(),Localizacion.class);
+        startActivity(sendIntent3);
+
+    }
 
 @Override
 public void onRequestPermissionsResult(int requestCode,String permissions[],int[]grantResults){
@@ -145,30 +186,19 @@ public void onRequestPermissionsResult(int requestCode,String permissions[],int[
                 }
                 return;
             }
+            case localizacion:{
+                if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+
+                    llamarActividadLocalizacion();
+                }else{
+                }
+                return;
+            }
 
             }
         }
 
-
-        public void llamarActividad()
-        {
-        Intent sendIntent=new Intent(getBaseContext(),Permitido.class);
-        startActivity(sendIntent);
-        }
-
-        public void llamarActividadCamara()
-        {
-            Intent sendIntent3=new Intent(getBaseContext(),Imagen.class);
-            startActivity(sendIntent3);
-        }
-
-        public void llamarActividadLocalizacion()
-         {
-
-                 Intent sendIntent3=new Intent(getBaseContext(),Localizacion.class);
-                 startActivity(sendIntent3);
-
-         }
 
 
 
