@@ -56,6 +56,7 @@ public class Localizacion extends AppCompatActivity {
     TextView longitud;
     String la;
     String lo;
+    String al;
     TextView altitud;
     TextView distancia;
     Button guardar;
@@ -68,7 +69,7 @@ public class Localizacion extends AppCompatActivity {
     double distanciaT=0;
     ListView lista;
     List<String> ubicacion = new ArrayList<String>();
-   String texto;
+    String texto;
     JSONArray localizaciones = new JSONArray();
 
     public String[] mApps = {
@@ -100,10 +101,11 @@ public class Localizacion extends AppCompatActivity {
                 Log.i("LOCATION", "Location	update	in	the	callback:	" + location);
                 if (location != null) {
                     la=String.valueOf(location.getLatitude());
-                    lo=String.valueOf(location.getAltitude());
+                    lo=String.valueOf(location.getLongitude());
+                    al=String.valueOf(location.getAltitude());
                     latitud.setText("Latitude:	 	" + la);
-                    longitud.setText("Longitude:	 	" + String.valueOf(location.getLongitude()));
-                    altitud.setText("Altitude:			" + lo);
+                    longitud.setText("Longitude:	 	" + lo);
+                    altitud.setText("Altitude:			" + al);
                     distanciaT = distance(location.getLatitude(), location.getLongitude(), plazaLatitud, plazalongitud);
                     distancia.setText(distancia.getText() + ": " + distanciaT);
                 }
@@ -117,12 +119,14 @@ public class Localizacion extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                texto= "Latitud: " + la + " Longitud: " + lo + "Fecha: " + Calendar.getInstance().getTime().toString();
+                texto= "Latitud: " + la + " Longitud: " + lo + " Fecha: " + Calendar.getInstance().getTime().toString();
                 ubicacion.add(texto);
                 ArrayAdapter<String> adaptador;
                 lista = (ListView) findViewById(R.id.listView);
                 adaptador = new ArrayAdapter<String>(Localizacion.this, android.R.layout.simple_list_item_1, ubicacion);
                 lista.setAdapter(adaptador);
+                Toast.makeText(getApplicationContext(),
+                        "Ubicación guardada", Toast.LENGTH_SHORT);
                 writeJSONObject();
             }
         });

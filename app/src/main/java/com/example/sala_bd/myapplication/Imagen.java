@@ -73,10 +73,10 @@ public class Imagen extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
         super.onActivityResult(requestCode,resultCode,data);
-        switch(requestCode){
+        switch(requestCode) {
             case IMAGE_PICKER_REQUEST:
-                if(resultCode==RESULT_OK){
-                    try{
+                if (resultCode == RESULT_OK) {
+                    try {
                         final Uri imageUri = data.getData();
                         final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                         final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
@@ -85,16 +85,17 @@ public class Imagen extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+
+            case REQUEST_IMAGE_CAPTURE:
+
+                if (requestCode == REQUEST_IMAGE_CAPTURE ) {
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    image.setImageBitmap(imageBitmap);
+                    Toast.makeText(Imagen.this, "Image Saved!", Toast.LENGTH_SHORT).show();
+                }
+
         }
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            image.setImageBitmap(imageBitmap);
-            Toast.makeText(Imagen.this, "Image Saved!", Toast.LENGTH_SHORT).show();
-        }
-
-
 
     }
 

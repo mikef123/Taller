@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -25,98 +26,110 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.FileNotFoundException;
-        import java.io.InputStream;
+import java.io.InputStream;
 
 import static android.R.attr.data;
 
 public class MainActivity extends AppCompatActivity {
 
-                ImageButton botonContacto;
-                ImageButton botonCamara;
-                ImageButton botonLocalizacion;
-                int RESULT_OK =1;
+    ImageButton botonContacto;
+    ImageButton botonCamara;
+    ImageButton botonLocalizacion;
+    ImageButton botonUbicacion;
+    int RESULT_OK =1;
 
-                ListView list;
-                String[] mProjection;
-                ContactsCursor mCursorAdapter;
-                Cursor mContactsCursor;
-                private static final int contactos = 1;
-                private static final int camara = 2;
-                private static final int localizacion = 3;
-                private static final int IMAGE_PICKER_REQUEST = 2;
-                static final int REQUEST_IMAGE_CAPTURE = 1;
+    ListView list;
+    String[] mProjection;
+    ContactsCursor mCursorAdapter;
+    Cursor mContactsCursor;
+    private static final int contactos = 1;
+    private static final int camara = 2;
+    private static final int localizacion = 3;
+    private static final int IMAGE_PICKER_REQUEST = 2;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
-                @Override
-                protected void onCreate(Bundle savedInstanceState) {
-                    super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-                    setContentView(R.layout.activity_main);
-
-
-                    botonContacto = (ImageButton) findViewById(R.id.imageButton);
-                    botonCamara = (ImageButton) findViewById(R.id.imageButton2);
-                    botonLocalizacion = (ImageButton) findViewById(R.id.imageButton3);
-
-                    botonContacto.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        setContentView(R.layout.activity_main);
 
 
-                                pedirPermiso();
-
-                            } else {
-
-                                llamarActividad();
-                            }
-                        }
-                    });
-
-                    botonCamara.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        botonContacto = (ImageButton) findViewById(R.id.imageButton);
+        botonCamara = (ImageButton) findViewById(R.id.imageButton2);
+        botonLocalizacion = (ImageButton) findViewById(R.id.imageButton3);
+        botonUbicacion = (ImageButton) findViewById(R.id.boton);
+        botonContacto.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
 
 
-                                pedirPermisoCamara();
+                    pedirPermiso();
 
-                            } else {
+                } else {
 
-                                llamarActividadCamara();
-                            }
-                        }
-                    });
-
-                    botonLocalizacion.setOnClickListener(new View.OnClickListener() {
-                                           public void onClick(View v) {
-                           if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-
-                               pedirPermisoLocalizacion();
-
-                           } else {
-
-                               llamarActividadLocalizacion();
-                           }
-                                           }
-                                       }
-                    );
+                    llamarActividad();
                 }
+            }
+        });
+
+        botonCamara.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+
+                    pedirPermisoCamara();
+
+                } else {
+
+                    llamarActividadCamara();
+                }
+            }
+        });
+
+        botonLocalizacion.setOnClickListener(new View.OnClickListener() {
+                                                 public void onClick(View v) {
+                                                     if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+                                                         pedirPermisoLocalizacion();
+
+                                                     } else {
+
+                                                         llamarActividadLocalizacion();
+                                                     }
+                                                 }
+                                             }
+        );
+
+        botonUbicacion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,MapsActivity.class);
+                startActivity(intent);
+
+
+
+            }
+        });
+    }
 
 
 
 
-        public void pedirPermiso()
-        {
+    public void pedirPermiso()
+    {
         int permissionCheck=ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS);
         if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS)!=PackageManager.PERMISSION_GRANTED){
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_CONTACTS))
-        {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_CONTACTS))
+            {
 
-        }
-        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CONTACTS},
-        contactos);
+            }
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CONTACTS},
+                    contactos);
         }
 
-        }
+    }
 
     public void pedirPermisoCamara() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -164,19 +177,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-@Override
-public void onRequestPermissionsResult(int requestCode,String permissions[],int[]grantResults){
+    @Override
+    public void onRequestPermissionsResult(int requestCode,String permissions[],int[]grantResults){
         switch(requestCode){
-        case contactos:{
+            case contactos:{
 //Ifrequestiscancelled,theresultarraysareempty.
-        if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED)
-        {
+                if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
 
-         llamarActividad();
-        }else{
-        }
-        return;
-        }
+                    llamarActividad();
+                }else{
+                }
+                return;
+            }
             case camara:{
                 if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED)
                 {
@@ -196,12 +209,12 @@ public void onRequestPermissionsResult(int requestCode,String permissions[],int[
                 return;
             }
 
-            }
         }
+    }
 
 
 
 
 
 
-        }
+}

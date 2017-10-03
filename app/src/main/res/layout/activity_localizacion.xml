@@ -42,15 +42,15 @@
         app:layout_constraintTop_toBottomOf="@+id/altitud" />
 
 
-<TextView
-    android:id="@+id/titulo"
-    android:layout_width="368dp"
-    android:layout_height="wrap_content"
-    app:layout_constraintTop_toBottomOf="@+id/distancia"
-    tools:layout_editor_absoluteX="8dp"
-    android:text="                               Ubicaciones Guardadas"
-    android:layout_gravity= "center"
-    android:layout_marginTop="7dp" />
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/distancia"
+        tools:layout_editor_absoluteX="8dp"
+        android:text="                               Ubicaciones Guardadas"
+        android:layout_gravity= "center"
+        android:layout_marginTop="7dp" />
 
     <ListView
         android:layout_width="366dp"
