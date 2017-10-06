@@ -103,10 +103,20 @@ public class MainActivity extends AppCompatActivity {
         );
 
         botonUbicacion.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,MapsActivity.class);
-                startActivity(intent);
+                if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+                    pedirPermisoLocalizacion();
+
+                } else {
+
+                    llamarActividadMapas();
+                }
+
+
+
+
 
 
 
@@ -174,6 +184,13 @@ public class MainActivity extends AppCompatActivity {
 
         Intent sendIntent3=new Intent(getBaseContext(),Localizacion.class);
         startActivity(sendIntent3);
+
+    }
+    public void llamarActividadMapas()
+    {
+
+        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+        startActivity(intent);
 
     }
 
