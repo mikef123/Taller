@@ -65,6 +65,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int localizacion = 3;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest mLocationRequest;
+    public static final double lowerLeftLatitude = 4.483899;
+    public static final double lowerLeftLongitude= -74.098075;
+    public static final double upperRightLatitude= 4.836415;
+    public static final double upperRigthLongitude= -74.063224;
 
 
     @Override
@@ -98,7 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
 
-        /*
+
         final Geocoder mGeocoder = new Geocoder(getBaseContext());
        mAddress = (EditText) findViewById(R.id.texto);
         //set focus and show keyboard
@@ -120,7 +124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         //busqueda(mGeocoder);
-*/
+
 
 
     }
@@ -220,7 +224,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        LatLng yo = new LatLng(Float.valueOf(la), Float.valueOf(lo));
+   /*     LatLng yo = new LatLng(Float.valueOf(la), Float.valueOf(lo));
         Marker ubicacion = mMap.addMarker(new MarkerOptions().position(yo).title("YO").icon(BitmapDescriptorFactory
                 .fromResource(R.drawable.bike))
                 .snippet("Aqui estoy yo") //Texto de información
@@ -231,7 +235,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-
+*/
         LatLng lugar1 = new LatLng(4.6272, -74.0639);
         Marker javeriana = mMap.addMarker(new MarkerOptions().position(lugar1).title("biciJaveriana").icon(BitmapDescriptorFactory
                 .fromResource(R.drawable.bike))
@@ -262,10 +266,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
 
         //Cuando se realice la busqueda
+
         String addressString = mAddress.getText().toString();
         if (!addressString.isEmpty()) {
             try {
-                List<Address> addresses = mGeocoder.getFromLocationName(addressString, 2);
+                List<Address> addresses = mGeocoder.getFromLocationName(
+                        addressString, 2,
+                        lowerLeftLatitude,
+                        lowerLeftLongitude,
+                        upperRightLatitude,
+                        upperRigthLongitude);
                 if (addresses != null && !addresses.isEmpty()) {
                     Address addressResult = addresses.get(0);
                     LatLng position = new LatLng(addressResult.getLatitude(), addressResult.getLongitude());
